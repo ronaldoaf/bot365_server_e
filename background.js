@@ -20,7 +20,7 @@ setInterval(function(){
         $(tabs).each(function(){
             tab_urls.push(this.url);		
         });	
-        if (!includes_list(tab_urls, 'totalcorner') ) chrome.tabs.create({url:'https://www.totalcorner.com/match/today'});
+        if (!includes_list(tab_urls, 'totalcorner') ) chrome.tabs.create({url:'https://www.totalcorner.com'});
 
 
     });
