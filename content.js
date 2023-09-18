@@ -103,7 +103,34 @@ function getJogos(data, page=1){
 }
 
 
-var loop=setInterval( ()=>{
+
+function medias(){
+	var data=[];
+	
+	$('tr[data-match_id]').each(function(){
+		var minuto=$(this).find('.match_status_minutes').text();
+		if(!['','0'].includes(minuto) ) return;
+		
+		var id=$(this).attr('data-match_id');
+		var tipo=/[0-9]+ m/.exec($(this).find('.td_league a').text())[0].replace(' ','');
+		var home=/\((.*)\)/.exec( $(this).find('.match_home a').text()  )[1]; 
+		var away=/\((.*)\)/.exec( $(this).find('.match_away a').text()  )[1]; 
+		
+	
+		data.push({
+			id: Number(id),
+			tipo:tipo,
+			home: home,
+			away: away
+		});
+	});
+	
+	 $.getScript('https://bot-ao.com/half/set_medias_e.php?data='+JSON.stringify(data));
+}
+
+
+
+function atualizaJogos(){
 	const hoje = new Date();
 	const ano = hoje.getFullYear();
 	const mes = String(hoje.getMonth() + 1).padStart(2, '0'); // os meses são de 0 a 11, então adicionamos 1
@@ -112,5 +139,21 @@ var loop=setInterval( ()=>{
 	const data = `${ano}${mes}${dia}`;
     
 	getJogos(data);
+	
+}
 
-},30*60*1000);
+setInterval( ()=>{
+	atualizaJogos();
+	medias();
+	setTimeout(_=>location.reload(), 10*1000);
+},5*60*1000);
+
+
+
+
+
+
+
+
+
+
