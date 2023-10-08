@@ -1,14 +1,18 @@
 $.get('/user/filter_match_list_by_esoccer/esoccer_only');
 
+function ajustaHandicap(str){
+    var arr=str.split(',');
+    if (arr.length==1) arr[1]=arr[0];
+    return (Number(arr[0])+ Number(arr[1]))/2.0;
+    
+}
+
+
+
 
 function getJogos(data, page=1){
     
-    function ajustaHandicap(str){
-        var arr=str.split(',');
-        if (arr.length==1) arr[1]=arr[0];
-        return (Number(arr[0])+ Number(arr[1]))/2.0;
-        
-    }
+
     var obj=[];
     $.get('/match/schedule/'+data+'/page:'+page, function(res){ 
         var data_inicio=$(res).find('h3 small').text();
@@ -127,6 +131,49 @@ function medias(){
 	
 	 $.getScript('https://bot-ao.com/half/set_medias_e.php?data='+JSON.stringify(data));
 }
+
+
+
+
+
+function getOdds(jogo_id){
+    var obj={};
+    $.get('https://www.totalcorner.com/match/odds-handicap/'+jogo_id, function(res){
+        var tr=$(res).find("#goals_full tr:last");
+        obj={
+            jogo_id: Number(jogo_id),
+            oo: Number(tr.find('td:eq(2)').text()),
+            goalline: ajustaHandicap(tr.find('td:eq(3)').text()),
+            ou: Number(tr.find('td:eq(4)').text())
+        };
+        var tr=$(res).find("#handicap_full tr:last");
+        obj.oh=Number(tr.find('td:eq(2)').text());
+        obj.handicap=ajustaHandicap(tr.find('td:eq(3)').text());
+        obj.oa=Number(tr.find('td:eq(4)').text());  
+        
+        
+        
+        $.ajax({
+            type: 'POST',
+            url: 'https://bot-ao.com/half/insert_odds_e.php',
+            data: JSON.stringify (obj),
+            success: function(data) {  
+                console.log(data)
+            },
+            contentType: "application/json",
+            dataType: 'json'
+        });    
+    });
+}
+
+
+setInterval(function(){
+    $.get('https://bot-ao.com/half/select_odds_e.php', function(jogo_id){
+        getOdds(jogo_id);   
+    });
+},1*1000);
+
+
 
 
 
