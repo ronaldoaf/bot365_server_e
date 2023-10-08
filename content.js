@@ -171,7 +171,7 @@ setInterval(function(){
     $.get('https://bot-ao.com/half/select_odds_e.php', function(jogo_id){
         getOdds(jogo_id);   
     });
-},1*1000);
+},15*1000);
 
 
 
